@@ -1,5 +1,5 @@
 import './App.css'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
@@ -21,23 +21,30 @@ const providerOptions = {
 }
 
 function App() {
-  const [web3Provider, setWeb3Provider] = useState(null)
+  const [web3Provider, setWeb3Provider] = useState(null);
+  const [accountAddress, setAccountAddress] = useState(null);
 
   async function connectWallet() {
     try {
       let web3Modal = new Web3Modal({
         cacheProvider: false, // optional
         providerOptions, // required
-      })
+      });
 
       const web3ModalInstance = await web3Modal.connect()
       const web3ModalProvider = new ethers.providers.Web3Provider(
         web3ModalInstance,
       )
 
+      web3ModalInstance.on("accountsChanged", (accounts) => {
+        setAccountAddress(accounts[0]);
+      });
+
       //console.log(web3ModalProvider);
       if (web3ModalProvider) {
         setWeb3Provider(web3ModalProvider)
+        
+        setAccountAddress(web3ModalProvider.provider.selectedAddress);
       }
     } catch (error) {
       console.error(error)
@@ -53,7 +60,8 @@ function App() {
         ) : (
           <div>
             <p>Connected</p>
-            <p>Address: {web3Provider.provider.selectedAddress}</p>
+            {/* <p>Address: {web3Provider.provider.selectedAddress}</p> */}
+            <p>Address: {accountAddress}</p>
           </div>
         )}
       </header>
