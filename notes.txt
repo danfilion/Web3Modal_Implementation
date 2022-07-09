@@ -1,0 +1,12 @@
+All documentation for the Web3Modal : https://github.com/Web3Modal/web3modal
+
+npx create-react-app web3modal_implementation
+
+cd into project
+
+npm install --save web3modal
+
+npm i ethers
+
+npm install --save @coinbase/wallet-sdk
+

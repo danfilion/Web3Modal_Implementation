@@ -1,25 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import React, { useState } from 'react'
+import Web3Modal from 'web3modal'
+import { ethers } from 'ethers'
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
+
+// All documentation for the Web3Modal : https://github.com/Web3Modal/web3modal
+
+//Metamask included by default.
+const providerOptions = {
+  coinbasewallet: {
+    package: CoinbaseWalletSDK, // Required
+    options: {
+      appName: 'My Awesome App', // Required
+      infuraId: 'INFURA_ID', // Required
+      rpc: '', // Optional if `infuraId` is provided; otherwise it's required
+      chainId: 1, // Optional. It defaults to 1 if not provided
+      darkMode: false, // Optional. Use dark theme, defaults to false
+    },
+  },
+}
 
 function App() {
+  const [web3Provider, setWeb3Provider] = useState(null)
+
+  async function connectWallet() {
+    try {
+      let web3Modal = new Web3Modal({
+        cacheProvider: false, // optional
+        providerOptions, // required
+      })
+
+      const web3ModalInstance = await web3Modal.connect()
+      const web3ModalProvider = new ethers.providers.Web3Provider(
+        web3ModalInstance,
+      )
+
+      //console.log(web3ModalProvider);
+      if (web3ModalProvider) {
+        setWeb3Provider(web3ModalProvider)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Web3Modal Connection</h1>
+        {web3Provider == null ? (
+          <button onClick={connectWallet}>Connect Wallet</button>
+        ) : (
+          <div>
+            <p>Connected</p>
+            <p>Address: {web3Provider.provider.selectedAddress}</p>
+          </div>
+        )}
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
