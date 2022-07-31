@@ -38,6 +38,7 @@ function App() {
 
       web3ModalInstance.on("accountsChanged", (accounts) => {
         setAccountAddress(accounts[0]);
+        console.log('Account changed.');
       });
 
       //console.log(web3ModalProvider);
